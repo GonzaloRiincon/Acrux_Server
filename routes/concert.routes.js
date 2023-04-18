@@ -2,10 +2,9 @@ const Concert = require("../models/Concert.model")
 
 const router = require("express").Router()
 
-router.get('/getFilteredConcerts', (req, res, next) => {
+router.post('/getFilteredConcerts', (req, res, next) => {
 
-    const { artist, city } = req.query
-
+    const { artist, city } = req.body
     if (artist && city) {
         Concert
             .find({
@@ -14,25 +13,25 @@ router.get('/getFilteredConcerts', (req, res, next) => {
                     { 'city': { '$regex': city, '$options': 'i' } }
                 ]
             })
-            .then(data => res.json(data))
+            .then(data => res.status(200).json(data))
             .catch(err => next(err))
     }
 
-    if (!city) {
+    else if (!city) {
         Concert
             .find({ 'artist': { '$regex': artist, '$options': 'i' } })
-            .then(data => res.json(data))
+            .then(data => res.status(200).json(data))
             .catch(err => next(err))
     }
 
-    if (!artist) {
+    else if (!artist) {
         Concert
             .find({ 'city': { '$regex': city, '$options': 'i' } })
-            .then(data => res.json(data))
+            .then(data => res.status(200).json(data))
             .catch(err => next(err))
     }
 
-    if (!artist && !city) {
+    else if (!artist && !city) {
         Concert
             .find()
             .then(data => res.json(data))
@@ -44,7 +43,7 @@ router.get('/details/:id', (req, res, next) => {
     const { id } = req.params
     Concert
         .findById(id)
-        .then(concert => res.json(concert))
+        .then(data => res.status(200).json(data))
         .catch(err => next(err))
 })
 
